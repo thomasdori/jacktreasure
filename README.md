@@ -8,28 +8,14 @@ A mobile capable Open Web Game in the endless running platformer genre.
 This project builds on volo js.
 To get it up and running you need git, node.js, npm (comes bundled with node) and volo installed.
 
-* git clone <github-repo> jacktreasure
+* git clone github-repo jacktreasure
 * cd jacktreasure
-* npm install (gets all node libs)
-* volo install (gets all front-end js libs)
+* npm install (install tools libs)
+* volo install (install project libs)
 
-You can run a development server with volo:
+Use the following volo commands:
 
-* volo serve
-
-Build the app, it creates a www-built directory with all js and css concatenated and minified:
-
-* volo build
-
-If you want to manually test this, run the serve command with the base argument:
-
-* volo serve base=www-built
-
-Generate an appcache in the www-built folder:
-
-* volo appcache
-
-Deploy to GitHub:
-
-* volo ghdeploy
-
+* volo serve (run dev server, for built files add base=www-built)
+* volo build (minify & concatenate js & css files into www-built folder)
+* volo appcache (generate appcache into www-built folder)
+* volo ghdeploy (deploy to GitHub)
