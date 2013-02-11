@@ -1,0 +1,28 @@
+
+/* Tip: Use "@import" to add styles instead of adding <link>'s in your
+   HTML, and volo will inline it when building for production */
+
+/* Styles for the installation button */
+/* @import "install-button.css"; */
+
+/* Your styles here */
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 110%;
+}
+
+#game {
+    position: absolute;
+    z-index: 1;
+}
+#background {
+    position: absolute;
+    z-index: 0;
+}

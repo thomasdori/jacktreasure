@@ -1,0 +1,18 @@
+{
+  "name": "jacktreasure",
+  "version": "0.0.1",
+  "dependencies": {
+    "volo-ghdeploy": "0.0.3",
+    "connect": "~2.4.4",
+    "less-middleware": "~0.1.5"
+  },
+  "amd": {},
+  "volo": {
+    "dependencies": {
+      "require": "github:jrburke/requirejs/2.1.4",
+      "Modernizr": "github:Modernizr/Modernizr/v2.6.2",
+      "domReady": "github:requirejs/domReady/2.0.1"
+    },
+    "baseUrl": "www/js/lib"
+  }
+}
