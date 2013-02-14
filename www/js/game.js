@@ -3,5 +3,9 @@ define('game', function () {
 
     }
 
+    Game.prototype.initLevel = function (map) {
+
+    };
+
     return Game;
 });
