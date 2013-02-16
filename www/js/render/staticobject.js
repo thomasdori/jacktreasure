@@ -1,7 +1,7 @@
-define('staticobject', function () {
-    function StaticObject(id, imageSprite, initX, initY) {
+define('render/staticobject', function () {
+    function StaticObject(id, sprite, initX, initY) {
         this.id = id;
-        this.imageSprite = imageSprite;
+        this.sprite = sprite;
         this.initX = initX;
         this.initY = initY;
     }

@@ -1,5 +1,5 @@
-require(['app', 'inputhandler', 'render/renderer', 'game', 'levelrepository', 'gameloop', 'resourceloader', 'camera', 'lib/Modernizr/modernizr', 'lib/domReady'],
-    function (App, InputHandler, Renderer, Game, LevelRepository, GameLoop, ResourceLoader, Camera) {
+require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader', 'render/camera', 'lib/Modernizr/modernizr', 'lib/domReady'],
+    function (App, InputHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera) {
 
         window.requestAnimFrame = (function () {
             return  window.requestAnimationFrame ||
@@ -27,13 +27,17 @@ require(['app', 'inputhandler', 'render/renderer', 'game', 'levelrepository', 'g
         }
         var Y_TILES = 18;
         var Y_OFF_SET = 3;
+        var ANIMATION_SPEED = 100; //ms
+        var GAME_SPEED = 500; //ms
 
-        var renderer = new Renderer(screen, background, document.createElement('canvas'), document.createElement('canvas'), window.innerWidth, window.innerHeight, Y_TILES);
-        var gameLoop = new GameLoop(renderer, camera, game);
+        var debugStatic = document.getElementById('debugStatic');
+        var debugDynamic = document.getElementById('debugDynamic');
+        var renderer = new Renderer(screen, background, document.createElement('canvas'), document.createElement('canvas'), window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
+//        var renderer = new Renderer(screen, background, debugStatic, debugDynamic, window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
         var camera = new Camera(renderer, game, Y_OFF_SET);
-        var levelRepo = new LevelRepository();
+        var gameLoop = new GameLoop(renderer, camera, game, 100, 500);
         var loader = new ResourceLoader();
 
-        var app = new App(inputHandler, renderer, game, gameLoop, levelRepo, loader, camera);
+        var app = new App(inputHandler, renderer, game, gameLoop, levelRepository, loader, camera);
         app.run();
     });
