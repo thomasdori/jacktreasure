@@ -20,6 +20,7 @@ define('render/renderer', function () {
         this.dynamicObjects = {};
         this.offSet = staticOffSet;
         this.effectiveOffSet = 0;
+        this.lastTickRatio = 0;
     }
 
     Renderer.prototype.init = function (spriteSheet) {
@@ -49,9 +50,28 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
+//        console.log(nxtTickRatio);
 
         this.staticLayerCtx.clearRect(0, 0, this.staticLayer.width, this.staticLayer.height);
-        this.staticLayerCtx.drawImage(this.staticBuffer, this.tileWidth, 0, this.staticBuffer.width - this.tileWidth, this.staticBuffer.height,
+
+        var diff;
+
+        if (nxtTickRatio != 0) {
+
+            diff = nxtTickRatio - this.lastTickRatio;
+            console.log(nxtTickRatio + " - " + this.lastTickRatio + " = " + diff);
+
+        } else {
+
+            diff = 1 - this.lastTickRatio;
+            console.log("1 - " + this.lastTickRatio + " = " + diff);
+        }
+        var xPoint = Math.floor(this.tileWidth * diff);
+
+        console.log("xPoint: " + xPoint);
+        this.lastTickRatio = nxtTickRatio;
+
+        this.staticLayerCtx.drawImage(this.staticBuffer, xPoint, 0, this.staticBuffer.width - this.tileWidth, this.staticBuffer.height,
             0, 0, this.staticBuffer.width - this.tileWidth, this.staticBuffer.height);
         this.staticBufferCtx.clearRect(0, 0, this.staticBuffer.width, this.staticBuffer.height);
         this.staticBufferCtx.drawImage(this.staticLayer, 0, 0);

@@ -28,7 +28,7 @@ require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository
         var Y_TILES = 18;
         var Y_OFF_SET = 3;
         var ANIMATION_SPEED = 100; //ms
-        var GAME_SPEED = 500; //ms
+        var GAME_SPEED = 5000; //ms
 
 //        var debugStatic = document.getElementById('debugStatic');
 //        var debugDynamic = document.getElementById('debugDynamic');
@@ -36,7 +36,7 @@ require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository
             document.createElement('canvas'), window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
 //        var renderer = new Renderer(screen, background, debugStatic, debugDynamic, window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
         var camera = new Camera(renderer, game, Y_OFF_SET);
-        var gameLoop = new GameLoop(renderer, camera, game, 100, 500);
+        var gameLoop = new GameLoop(renderer, camera, game, ANIMATION_SPEED, GAME_SPEED);
         var loader = new ResourceLoader();
 
         var app = new App(inputHandler, renderer, game, gameLoop, levelRepository, loader, camera);
