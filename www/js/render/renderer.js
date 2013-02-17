@@ -54,16 +54,16 @@ define('render/renderer', function () {
 
         this.staticLayerCtx.clearRect(0, 0, this.staticLayer.width, this.staticLayer.height);
 
-        var diff;
+        var diff = 0;
 
         if (nxtTickRatio != 0) {
 
-            diff = nxtTickRatio - this.lastTickRatio;
+            diff = (nxtTickRatio - this.lastTickRatio).toFixed(1);
             console.log(nxtTickRatio + " - " + this.lastTickRatio + " = " + diff);
 
         } else {
 
-            diff = 1 - this.lastTickRatio;
+            diff = (1 - this.lastTickRatio).toFixed(1);
             console.log("1 - " + this.lastTickRatio + " = " + diff);
         }
         var xPoint = Math.floor(this.tileWidth * diff);
@@ -81,6 +81,7 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.drawAnimation = function () {
+        console.log("DRAW ANIMATION");
         for (var key in this.dynamicObjects) {
             var elem = this.dynamicObjects[key];
             var anim = elem.currentAnimation;
