@@ -10,7 +10,7 @@ define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/
     Camera.prototype.init = function (gridInfo) {
         this.renderer.setBackground({startX: 0, startY: 12, sprite: spriteMapper['path']});
 
-        var grid = this.game.getLevelStart(gridInfo.yTiles + this.offSet);
+        var grid = this.game.getLevelStart(gridInfo.xTiles + this.offSet);
 
         var self = this;
         grid.forEach(function (row, y) {

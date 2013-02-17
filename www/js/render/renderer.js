@@ -1,12 +1,14 @@
 define('render/renderer', function () {
 
-    function Renderer(screen, background, staticLayer, dynamicLayer, clientWidth, clientHeight, yTiles, staticOffSet) {
+    function Renderer(screen, background, staticLayer, staticBuffer, dynamicLayer, clientWidth, clientHeight, yTiles, staticOffSet) {
         this.screen = screen;
         this.screenCtx = screen.getContext('2d');
         this.background = background;
         this.backgroundCtx = background.getContext('2d');
         this.staticLayer = staticLayer;
         this.staticLayerCtx = staticLayer.getContext('2d');
+        this.staticBuffer = staticBuffer;
+        this.staticBufferCtx = staticBuffer.getContext('2d');
         this.dynamicLayer = dynamicLayer;
         this.dynamicLayerCtx = dynamicLayer.getContext('2d');
         this.clientWidth = clientWidth;
@@ -17,6 +19,7 @@ define('render/renderer', function () {
         this.tileWidth = 0;
         this.dynamicObjects = {};
         this.offSet = staticOffSet;
+        this.effectiveOffSet = 0;
     }
 
     Renderer.prototype.init = function (spriteSheet) {
@@ -31,8 +34,13 @@ define('render/renderer', function () {
         this.background.width = this.clientWidth;
         this.background.height = this.clientHeight;
 
-        this.staticLayer.width = this.clientWidth + (this.offSet * this.tileWidth);
+        this.effectiveOffSet = this.offSet * this.tileWidth;
+        var staticWidth = this.clientWidth + this.effectiveOffSet;
+        this.staticLayer.width = staticWidth;
         this.staticLayer.height = this.clientHeight;
+
+        this.staticBuffer.width = staticWidth;
+        this.staticBuffer.height = this.clientHeight;
 
         this.dynamicLayer.width = this.clientWidth;
         this.dynamicLayer.height = this.clientHeight;
@@ -41,11 +49,15 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
-        this.staticLayerCtx.drawImage(this.staticLayer, this.tileWidth, 0, this.staticLayer.width-this.tileWidth, this.staticLayer.height,
-            0, 0, this.staticLayer-this.tileWidth, this.staticLayer.height);
-        this.screenCtx.drawImage(this.staticLayer, 0, 0, this.staticLayer.width - (this.offSet * this.tileWidth), this.staticLayer.height,
-            0, 0, this.screen.width, this.screen.height);
-        this.screenCtx.drawImage(this.dynamicLayer, 0, 0, this.dynamicLayer.width, this.dynamicLayer.height, 0, 0, this.screen.width, this.screen.height);
+
+        this.staticLayerCtx.clearRect(0, 0, this.staticLayer.width, this.staticLayer.height);
+        this.staticLayerCtx.drawImage(this.staticBuffer, this.tileWidth, 0, this.staticBuffer.width - this.tileWidth, this.staticBuffer.height,
+            0, 0, this.staticBuffer.width - this.tileWidth, this.staticBuffer.height);
+        this.staticBufferCtx.clearRect(0, 0, this.staticBuffer.width, this.staticBuffer.height);
+        this.staticBufferCtx.drawImage(this.staticLayer, 0, 0);
+        this.screenCtx.clearRect(0, 0, this.screen.width, this.screen.height);
+        this.screenCtx.drawImage(this.staticLayer, 0, 0);
+        this.screenCtx.drawImage(this.dynamicLayer, 0, 0);
     };
 
     Renderer.prototype.drawAnimation = function () {
@@ -84,7 +96,7 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.addStatic = function (elem) {
-        this.staticLayerCtx.drawImage(this.sprite, elem.sprite.xPoint, elem.sprite.yPoint, elem.sprite.width, elem.sprite.height,
+        this.staticBufferCtx.drawImage(this.sprite, elem.sprite.xPoint, elem.sprite.yPoint, elem.sprite.width, elem.sprite.height,
             elem.initX * this.tileWidth, elem.initY * this.tileWidth, elem.sprite.tileWidth * this.tileWidth, elem.sprite.tileHeight * this.tileWidth);
     };
 

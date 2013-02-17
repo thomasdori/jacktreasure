@@ -30,9 +30,10 @@ require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository
         var ANIMATION_SPEED = 100; //ms
         var GAME_SPEED = 500; //ms
 
-        var debugStatic = document.getElementById('debugStatic');
-        var debugDynamic = document.getElementById('debugDynamic');
-        var renderer = new Renderer(screen, background, document.createElement('canvas'), document.createElement('canvas'), window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
+//        var debugStatic = document.getElementById('debugStatic');
+//        var debugDynamic = document.getElementById('debugDynamic');
+        var renderer = new Renderer(screen, background, document.createElement('canvas'), document.createElement('canvas'),
+            document.createElement('canvas'), window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
 //        var renderer = new Renderer(screen, background, debugStatic, debugDynamic, window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
         var camera = new Camera(renderer, game, Y_OFF_SET);
         var gameLoop = new GameLoop(renderer, camera, game, 100, 500);
