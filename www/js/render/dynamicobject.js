@@ -1,11 +1,11 @@
 define('render/dynamicobject', function () {
-    function DynamicObject(id, animations, initX, initY, currentAnimation, currentAnimationId) {
+    function DynamicObject(id, sprites, initX, initY, currentSprite, currentSpriteId) {
         this.id = id;
-        this.animations = animations;
+        this.sprites = sprites;
         this.initX = initX;
         this.initY = initY;
-        this.currentAnimation = currentAnimation;
-        this.currentAnimationId = currentAnimationId;
+        this.currentSprite = currentSprite;
+        this.currentSpriteId = currentSpriteId;
         this.currentFrame = 0;
     }
 

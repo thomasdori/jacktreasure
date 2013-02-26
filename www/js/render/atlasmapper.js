@@ -1,4 +1,4 @@
-define('render/spritemapper', ['render/sprite', 'render/animation'], function (Sprite, Animation) {
+define('render/atlasmapper', ['render/sprite', 'render/animation'], function (Sprite, Animation) {
     return {
         rock: new Sprite(160, 0, 32, 32, 1, 1),
         path: new Sprite(128, 0, 32, 32, 1, 1),
