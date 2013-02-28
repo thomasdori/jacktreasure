@@ -20,7 +20,7 @@ define('resourceloader', function () {
 
     ResourceLoader.prototype.load = function () {
         var self = this;
-        self.resources.forEach(function (elem, count) {
+        self.resources.forEach(function (elem) {
             elem.file.onload = function () {
                 self.onResourceLoad();
             };

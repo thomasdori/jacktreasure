@@ -1,9 +1,9 @@
 define('render/staticobject', function () {
-    function StaticObject(id, subImage, initX, initY) {
+    function StaticObject(id, subImage, tileX, tileY) {
         this.id = id;
         this.subImage = subImage;
-        this.initX = initX;
-        this.initY = initY;
+        this.tileX = tileX;
+        this.tileY = tileY;
     }
 
     return StaticObject;

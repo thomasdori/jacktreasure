@@ -12,11 +12,11 @@ define('app', function() {
     App.prototype.run = function () {
         this.game.initLevel(this.levelRespository[0]);
 
-        var sprite = this.resourceLoader.addImage('gfx/simple-sprite.png');
+        var atlas = this.resourceLoader.addImage('gfx/simple-atlas.png');
 
         var self = this;
         this.resourceLoader.onComplete = function () {
-            var gridInfo = self.renderer.init(sprite);
+            var gridInfo = self.renderer.init(atlas);
             self.camera.init(gridInfo);
             self.gameLoop.run();
         };
