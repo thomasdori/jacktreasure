@@ -34,42 +34,40 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
-//        console.log(nxtTickRatio);
 
-//        var self = this;
-//        this.staticObjects.forEach(function (staticO) {
-//            var x = Math.floor(staticO.tileX * self.tileWidth);
-//            var y = Math.floor(staticO.tileY * self.tileWidth);
-//
-//            var clearX = x - Math.floor(self.lastTickRatio * self.tileWidth);
-//            self.screenCtx.clearRect(clearX, y, staticO.subImage.tileWidth * self.tileWidth, staticO.subImage.tileHeight * self.tileWidth);
-//
-//            var drawX = x - Math.floor(nxtTickRatio * self.tileWidth);
-//            self.screenCtx.drawImage(self.atlas, staticO.subImage.xPoint, staticO.subImage.yPoint, staticO.subImage.width, staticO.subImage.height,
-//                x, y, staticO.subImage.tileWidth * self.tileWidth, staticO.subImage.tileHeight * self.tileWidth);
-//
-//        });
-        if (nxtTickRatio === 0) {
-            var self = this;
-            this.staticObjects.forEach(function (elem, i) {
-                if (elem.tileX > 0) {
-                    var x = elem.tileX * self.tileWidth;
-                    var y = elem.tileY * self.tileWidth;
-                    var w = elem.subImage.tileWidth * self.tileWidth;
-                    var h = elem.subImage.tileHeight * self.tileWidth;
-                    self.screenCtx.clearRect(x, y, w, h);
+        var self = this;
+        this.staticObjects.forEach(function (elem, i) {
+            if (elem.tileX > 0) {
 
-                    self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
-                        elem.tileX * self.tileWidth, elem.tileY * self.tileWidth, elem.subImage.tileWidth * self.tileWidth, elem.subImage.tileHeight * self.tileWidth);
-
-
+                var x, xLast;
+                if (nxtTickRatio === 0) {
                     elem.tileX--;
+                    x = elem.tileX * self.tileWidth;
+                    xLast = x + self.tileWidth;
                 } else {
-                    self.staticObjects.splice(i, 1);
+                    x = (elem.tileX * self.tileWidth) - Math.floor(self.tileWidth * nxtTickRatio);
+                    xLast = (x + self.tileWidth) - Math.floor(self.tileWidth * self.lastTickRatio);
                 }
 
-            });
-        }
+                var y = elem.tileY * self.tileWidth;
+                var w = elem.subImage.tileWidth * self.tileWidth;
+                var h = elem.subImage.tileHeight * self.tileWidth;
+
+                console.log(nxtTickRatio);
+                console.log("x: " + x + " y: " + y + " w: " + w + " h:" + h);
+
+                self.screenCtx.clearRect(xLast, y, w, h);
+//                if (nxtTickRatio !== 0) {
+                    self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
+                        x, y, w, h);
+//                }
+
+            } else {
+                self.staticObjects.splice(i, 1);
+            }
+
+        });
+
 
         this.lastTickRatio = nxtTickRatio;
     };
@@ -112,9 +110,6 @@ define('render/renderer', function () {
 
     Renderer.prototype.addStatic = function (elem) {
         this.staticObjects.push(elem);
-
-//        this.screenCtx.drawImage(this.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
-//            elem.tileX * this.tileWidth, elem.tileY * this.tileWidth, elem.subImage.tileWidth * this.tileWidth, elem.subImage.tileHeight * this.tileWidth);
     };
 
     Renderer.prototype.addAnimatedStatic = function (elem) {
