@@ -53,14 +53,9 @@ define('render/renderer', function () {
                 var w = elem.subImage.tileWidth * self.tileWidth;
                 var h = elem.subImage.tileHeight * self.tileWidth;
 
-                console.log(nxtTickRatio);
-                console.log("x: " + x + " y: " + y + " w: " + w + " h:" + h);
-
                 self.screenCtx.clearRect(xLast, y, w, h);
-//                if (nxtTickRatio !== 0) {
-                    self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
+                self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
                         x, y, w, h);
-//                }
 
             } else {
                 self.staticObjects.splice(i, 1);

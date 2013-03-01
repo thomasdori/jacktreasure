@@ -28,7 +28,7 @@ require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository
         var Y_TILES = 18;
         var Y_OFF_SET = 3;
         var ANIMATION_SPEED = 500; //ms
-        var GAME_SPEED = 100; //ms
+        var GAME_SPEED = 25; //ms
 
 //        var debugStatic = document.getElementById('debugStatic');
 //        var debugDynamic = document.getElementById('debugDynamic');
