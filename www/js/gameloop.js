@@ -23,7 +23,7 @@ define('gameloop', function () {
             if (acDeltaAnim > self.animationSpeed) {
                 acDeltaAnim = 0;
 
-//                self.renderer.drawAnimation();
+                self.renderer.drawAnimation();
 
             } else {
                 acDeltaAnim += delta;

@@ -1,9 +1,9 @@
 define('render/dynamicobject', function () {
-    function DynamicObject(id, sprites, initX, initY, currentSprite, currentSpriteId) {
+    function DynamicObject(id, sprites, tileX, tileY, currentSprite, currentSpriteId) {
         this.id = id;
         this.sprites = sprites;
-        this.initX = initX;
-        this.initY = initY;
+        this.tileX = tileX;
+        this.tileY = tileY;
         this.currentSprite = currentSprite;
         this.currentSpriteId = currentSpriteId;
         this.currentFrame = 0;
