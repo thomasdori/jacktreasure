@@ -43,11 +43,9 @@ define('gameloop', function () {
                 nxtTickRatio = Math.round(acDeltaGame/self.gameSpeed * 10) / 10;
                 if (nxtTickRatio >= 1)
                     nxtTickRatio = 0;
-                if (prevTickRatio != nxtTickRatio)// && nxtTickRatio != 1)
+                if (prevTickRatio != nxtTickRatio)
                     self.renderer.draw(nxtTickRatio);
             }
-
-
 
             prevTickRatio = nxtTickRatio;
             lastUpdate = Date.now();

@@ -1,23 +1,24 @@
-define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/sprite', 'render/atlasmapper',
-    'render/transition'], function (StaticObject, DynamicObject, Sprite, atlasMapper, Transition) {
-    function Camera(renderer, game, offSet) {
+define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/sprite', 'render/atlasmapper'], function (StaticObject, DynamicObject, Sprite, atlasMapper) {
+    function Camera(renderer, game) {
         this.renderer = renderer;
         this.game = game;
-        this.offSet = offSet;
         this.id = 0;
         this.atlas = {};
+        this.nxtXCoord = -1;
     }
 
     Camera.prototype.init = function (gridInfo) {
         this.renderer.setBackground({startX: 0, startY: 12, subImage: atlasMapper['path']});
 
-        var grid = this.game.getLevelStart(gridInfo.xTiles + this.offSet);
+        var grid = this.game.getLevelStart(gridInfo.xTiles);
+        this.nxtXCoord = gridInfo.xTiles;
+        this.width = gridInfo.xTiles;
 
         var self = this;
         grid.forEach(function (row, y) {
             row.forEach(function (tile, x) {
                 if (tile !== 0) {
-                    self.renderer.addStatic(new StaticObject(self.id, atlasMapper[tile], x, y, new Transition(x, y, 0, y), x, y, x + 1));
+                    self.renderer.addStatic(new StaticObject(self.id, atlasMapper[tile], x, y));
                     self.id++;
                 }
             });
@@ -28,7 +29,13 @@ define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/
     };
 
     Camera.prototype.tick = function () {
-
+        var self = this;
+        this.game.getMapSlice(this.nxtXCoord-1).forEach(function (elem, y) {
+            if (elem !== 0) {
+                self.renderer.addStatic(new StaticObject(self.id, atlasMapper[elem], self.width-1, y));
+            }
+        });
+        this.nxtXCoord++;
     };
 
     return Camera;

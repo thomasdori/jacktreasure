@@ -26,15 +26,11 @@ require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository
             //todo game-pad + keyboard
         }
         var Y_TILES = 18;
-        var Y_OFF_SET = 3;
-        var ANIMATION_SPEED = 500; //ms
-        var GAME_SPEED = 25; //ms
+        var ANIMATION_SPEED = 100; //ms
+        var GAME_SPEED = 30; //ms
 
-//        var debugStatic = document.getElementById('debugStatic');
-//        var debugDynamic = document.getElementById('debugDynamic');
-        var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
-//        var renderer = new Renderer(screen, background, debugStatic, debugDynamic, window.innerWidth, window.innerHeight, Y_TILES, Y_OFF_SET);
-        var camera = new Camera(renderer, game, Y_OFF_SET);
+        var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
+        var camera = new Camera(renderer, game);
         var gameLoop = new GameLoop(renderer, camera, game, ANIMATION_SPEED, GAME_SPEED);
         var loader = new ResourceLoader();
 

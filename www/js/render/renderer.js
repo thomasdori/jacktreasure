@@ -1,6 +1,6 @@
 define('render/renderer', function () {
 
-    function Renderer(screen, background, clientWidth, clientHeight, yTiles, staticOffSet) {
+    function Renderer(screen, background, clientWidth, clientHeight, yTiles) {
         this.screen = screen;
         this.screenCtx = screen.getContext('2d');
         this.background = background;
@@ -13,7 +13,6 @@ define('render/renderer', function () {
         this.tileWidth = 0;
         this.dynamicObjects = {};
         this.staticObjects = [];
-        this.offSet = staticOffSet;
         this.lastTickRatio = 0;
         this.dirtyMap = [];
     }
@@ -40,7 +39,6 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
-
         var self = this;
         this.staticObjects.forEach(function (elem, i) {
             var yPoint = elem.tileY * self.tileWidth;

@@ -25,6 +25,20 @@ define('game/game', ['game/heroaction', 'game/hero'], function (HeroAction, Hero
         return start;
     };
 
+    Game.prototype.getMapSlice = function (xCoord) {
+        if (xCoord >= this.map[1].length)
+            return [];
+
+        var col = [];
+        for (var y = 0; y < this.map.length; y++) {
+            var elem = this.map[y][xCoord];
+            if (elem !== 'path')
+                col.push(elem);
+        }
+
+        return col;
+    };
+
     Game.prototype.tick = function () {
 
     };
