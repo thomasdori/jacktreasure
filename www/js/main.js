@@ -1,5 +1,5 @@
-require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader', 'render/camera', 'lib/modernizr', 'lib/domReady'],
-    function (App, InputHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera) {
+require(['app', 'input/inputhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader', 'render/camera', 'input/touchinterpreter', 'lib/modernizr', 'lib/domReady'],
+    function (App, InputHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera, TouchInterpreter) {
 
         window.requestAnimFrame = (function () {
             return  window.requestAnimationFrame ||
@@ -16,12 +16,13 @@ require(['app', 'inputhandler', 'render/renderer', 'game/game', 'levelrepository
         var background = document.getElementById('background');
 
         var game = new Game();
-        var inputHandler = new InputHandler(game);
+        var touchInterpreter = new TouchInterpreter();
+        var inputHandler = new InputHandler(game, touchInterpreter);
 
         if (Modernizr.touch) {
-            screen.addEventListener('touchstart', inputHandler.handleTouchStart, false);
-            screen.addEventListener('touchmove', inputHandler.handleTouchMove, false);
-            screen.addEventListener('touchend', inputHandler.handleTouchEnd, false);
+            screen.addEventListener('touchstart', inputHandler.handleTouchStart.bind(inputHandler), false);
+            screen.addEventListener('touchmove', inputHandler.handleTouchMove.bind(inputHandler), false);
+            screen.addEventListener('touchend', inputHandler.handleTouchEnd.bind(inputHandler), false);
         } else {
             //todo game-pad + keyboard
         }

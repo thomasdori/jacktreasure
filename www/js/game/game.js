@@ -51,5 +51,9 @@ define('game/game', ['game/heroaction', 'game/hero'], function (HeroAction, Hero
 
     };
 
+    Game.prototype.do = function (action) {
+        console.log(action);
+    };
+
     return Game;
 });
