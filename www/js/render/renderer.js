@@ -40,8 +40,7 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
-        if (nxtTickRatio === 0)
-            console.log('draw ticker: ' + this.drawTicker++);
+        console.log(nxtTickRatio);
 
         var self = this;
         this.staticObjects.forEach(function (elem, i) {

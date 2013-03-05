@@ -1,8 +1,7 @@
 define('gameloop', function () {
-    function GameLoop(renderer, camera, game, animationSpeed, gameSpeed) {
+    function GameLoop(renderer, tickBus, animationSpeed, gameSpeed) {
         this.renderer = renderer;
-        this.camera = camera;
-        this.game = game;
+        this.tickBus = tickBus;
         this.animationSpeed = animationSpeed;
         this.gameSpeed = gameSpeed;
         window.stopRequestAnimFrame = false;
@@ -31,12 +30,13 @@ define('gameloop', function () {
                 acDeltaAnim += delta;
             }
 
-            // moving, game stuff
+            // moving, game stuff, everything registered to the tick bus
             if (acDeltaGame > self.gameSpeed) {
                 acDeltaGame = 0;
 
-                self.game.tick();
-                self.camera.tick();
+                self.tickBus.forEach(function (method) {
+                    method();
+                });
 
                 nxtTickRatio = 0;
 

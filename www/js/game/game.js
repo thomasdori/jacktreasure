@@ -1,49 +1,15 @@
-define('game/game', ['game/heroaction', 'game/hero', 'game/collisiondetector'], function (HeroAction, Hero,
-                                                                                          CollisionDetector) {
-    function Game(renderer, jumpRange, slideRange) {
+define('game/game', ['game/heroaction', 'game/hero'], function (HeroAction, Hero) {
+    function Game(renderer, collisionDetector, jumpRange, slideRange, heroId) {
         this.renderer = renderer;
         this.jumpRange = jumpRange;
         this.slideRange = slideRange;
-        this.map = [
-            []
-        ];
         this.hero = {};
-        this.collisionDetector = {};
-        this.heroId = 0;
+        this.collisionDetector = collisionDetector;
+        this.heroId = heroId;
     }
 
-    Game.prototype.initLevel = function (grid) {
-
-        this.map = grid;
-        this.collisionDetector = new CollisionDetector(this.map);
-        this.hero = new Hero(3, 10, 1, 2, HeroAction.RUN, false, -1);
-    };
-
-    Game.prototype.getLevelStart = function (width) {
-        var start = [];
-        for (var y=0; y<this.map.length; y++) {
-            start.push([]);
-            for (var x=0; x<width; x++) {
-                var elem = this.map[y][x];
-                if (elem !== 'path')
-                    start[y].push(elem);
-            }
-        }
-        return start;
-    };
-
-    Game.prototype.getMapSlice = function (xCoord) {
-        if (xCoord >= this.map[1].length)
-            return [];
-
-        var col = [];
-        for (var y = 0; y < this.map.length; y++) {
-            var elem = this.map[y][xCoord];
-            if (elem !== 'path')
-                col.push(elem);
-        }
-
-        return col;
+    Game.prototype.init = function (heroX, heroY) {
+        this.hero = new Hero(heroX, heroY, 1, 2, HeroAction.RUN, false, -1);
     };
 
     Game.prototype.tick = function () {
@@ -81,10 +47,6 @@ define('game/game', ['game/heroaction', 'game/hero', 'game/collisiondetector'], 
         this.hero.actionTimerSet = true;
         this.hero.actionTimer = this.slideRange;
         this.renderer.queueNxtSprite(this.heroId, HeroAction.SLIDE);
-    };
-
-    Game.prototype.setHeroId = function (id) {
-        this.heroId = id;
     };
 
     return Game;

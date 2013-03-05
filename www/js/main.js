@@ -1,7 +1,8 @@
 require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader',
-    'render/camera', 'input/touchinterpreter', 'input/keyhandler', 'lib/modernizr', 'lib/domReady'],
+    'render/camera', 'input/touchinterpreter', 'input/keyhandler', 'game/mapcontroller', 'game/collisiondetector',
+    'lib/modernizr', 'lib/domReady'],
     function (App, TouchHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera, TouchInterpreter,
-              KeyHandler) {
+              KeyHandler, MapController, CollisionDetector) {
 
         window.requestAnimFrame = (function () {
             return  window.requestAnimationFrame ||
@@ -22,13 +23,15 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
         var GAME_SPEED = 100; //ms
         var JUMP_RANGE = 10;
         var SLIDE_RANGE = 10;
+        var JACKS_ID = 0;
 
         var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
-
-        var game = new Game(renderer, JUMP_RANGE, SLIDE_RANGE);
-
-        var camera = new Camera(renderer, game);
-        var gameLoop = new GameLoop(renderer, camera, game, ANIMATION_SPEED, GAME_SPEED);
+        var collisionDetector = new CollisionDetector();
+        var game = new Game(renderer, collisionDetector, JUMP_RANGE, SLIDE_RANGE, JACKS_ID);
+        var mapCtr = new MapController();
+        var camera = new Camera(renderer, mapCtr, JACKS_ID);
+        var tickBus = [camera.tick.bind(camera), game.tick.bind(game)];
+        var gameLoop = new GameLoop(renderer, tickBus, ANIMATION_SPEED, GAME_SPEED);
         var loader = new ResourceLoader();
 
         var gameActionMapper = {
@@ -43,13 +46,14 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
             screen.addEventListener('touchmove', touchHandler.handleTouchMove.bind(touchHandler), false);
             screen.addEventListener('touchend', touchHandler.handleTouchEnd.bind(touchHandler), false);
 
+        } else if (Modernizr.gamepads) {
+            //todo game-pad
+
         } else {
             var keyHandler = new KeyHandler(gameActionMapper);
             window.addEventListener('keydown', keyHandler.handleKeyDown.bind(keyHandler), false);
-
-            //todo game-pad
         }
 
-        var app = new App(renderer, game, gameLoop, levelRepository, loader, camera);
+        var app = new App(renderer, game, gameLoop, levelRepository, loader, camera, mapCtr, collisionDetector);
         app.run();
     });

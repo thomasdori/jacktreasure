@@ -1,7 +1,11 @@
 define('game/collisiondetector', ['game/heroaction'], function (HeroAction) {
-    function CollisionDetector(map) {
-        this.map = map;
+    function CollisionDetector() {
+        this.map = [[]];
     }
+
+    CollisionDetector.prototype.init = function (map) {
+        this.map = map;
+    };
 
     CollisionDetector.prototype.isCollision = function (hero) {
         return (this.map[hero.yCoord][hero.xCoord+1] !== 0 && hero.currentAction !== HeroAction.SLIDE)

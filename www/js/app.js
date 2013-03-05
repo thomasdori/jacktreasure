@@ -1,16 +1,22 @@
 define('app', function() {
-    function App(renderer, game, gameLoop, levelRepository, resourceLoader, camera) {
+    function App(renderer, game, gameLoop, levelRepository, resourceLoader, camera, mapCtrlr, collisionDetector) {
         this.renderer = renderer;
         this.game = game;
         this.gameLoop = gameLoop;
         this.levelRespository = levelRepository;
         this.resourceLoader = resourceLoader;
         this.camera = camera;
+        this.mapCtrlr = mapCtrlr;
+        this.collisionDetector = collisionDetector;
     }
 
     App.prototype.run = function () {
-        this.game.initLevel(this.levelRespository[0]);
+        var map = this.levelRespository[0];
+        this.mapCtrlr.initLevel(map);
+        this.collisionDetector.init(map);
 
+        var heroPosition = {x:2,y:10}; // todo parse from map
+        this.game.init(heroPosition.x, heroPosition.y);
         var atlas = this.resourceLoader.addImage('gfx/simple-atlas.png');
 
         var self = this;
