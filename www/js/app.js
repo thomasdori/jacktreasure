@@ -1,6 +1,5 @@
 define('app', function() {
-    function App(inputHandler, renderer, game, gameLoop, levelRepository, resourceLoader, camera) {
-        this.inputHandler = inputHandler;
+    function App(renderer, game, gameLoop, levelRepository, resourceLoader, camera) {
         this.renderer = renderer;
         this.game = game;
         this.gameLoop = gameLoop;

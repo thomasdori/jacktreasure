@@ -1,12 +1,11 @@
-define('input/inputhandler', function () {
-    function InputHandler(game, touchInterpreter, actionMapper) {
-        this.game = game;
+define('input/touchhandler', function () {
+    function TouchHandler(touchInterpreter, actionMapper) {
         this.touchInterpreter = touchInterpreter;
         this.actionMapper = actionMapper;
         this.onGoingTouches = {};
     }
 
-    InputHandler.prototype.handleTouchStart = function (event) {
+    TouchHandler.prototype.handleTouchStart = function (event) {
         event.preventDefault();
 
         var touches = event.changedTouches;
@@ -14,7 +13,7 @@ define('input/inputhandler', function () {
             this.onGoingTouches[touches[i].identifier] = [touches[i]];
     };
 
-    InputHandler.prototype.handleTouchMove = function (event) {
+    TouchHandler.prototype.handleTouchMove = function (event) {
         event.preventDefault();
 
         var touches = event.changedTouches;
@@ -26,8 +25,7 @@ define('input/inputhandler', function () {
             goinTouches.push(touches[i]);
 
             if (goinTouches.length == 4) {
-                var action = this.touchInterpreter.interpret(goinTouches);
-                this.actionMapper[action]();
+                this.actionMapper[this.touchInterpreter.interpret(goinTouches)]();
 
                 for (var prop in this.onGoingTouches)
                     delete this.onGoingTouches[prop];
@@ -37,7 +35,7 @@ define('input/inputhandler', function () {
         }
     };
 
-    InputHandler.prototype.handleTouchEnd = function (event) {
+    TouchHandler.prototype.handleTouchEnd = function (event) {
         event.preventDefault();
 
         var touches = event.changedTouches;
@@ -46,8 +44,7 @@ define('input/inputhandler', function () {
 
             if (goinTouches !== undefined) {
                 goinTouches.push(touches[i]);
-                var action = this.touchInterpreter.interpret(goinTouches);
-                this.actionMapper[action]();
+                this.actionMapper[this.touchInterpreter.interpret(goinTouches)]();
 
                 for (var prop in this.onGoingTouches)
                     delete this.onGoingTouches[prop];
@@ -57,5 +54,5 @@ define('input/inputhandler', function () {
         }
     };
 
-    return InputHandler;
+    return TouchHandler;
 });
