@@ -17,11 +17,13 @@ require(['app', 'input/inputhandler', 'render/renderer', 'game/game', 'levelrepo
 
         var Y_TILES = 18;
         var ANIMATION_SPEED = 100; //ms
-        var GAME_SPEED = 30; //ms
+        var GAME_SPEED = 100; //ms
+        var JUMP_RANGE = 10;
+        var SLIDE_RANGE = 10;
 
         var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
 
-        var game = new Game(renderer);
+        var game = new Game(renderer, JUMP_RANGE, SLIDE_RANGE);
 
         var camera = new Camera(renderer, game);
         var gameLoop = new GameLoop(renderer, camera, game, ANIMATION_SPEED, GAME_SPEED);

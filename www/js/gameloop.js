@@ -5,6 +5,7 @@ define('gameloop', function () {
         this.game = game;
         this.animationSpeed = animationSpeed;
         this.gameSpeed = gameSpeed;
+        window.stopRequestAnimFrame = false;
     }
 
     GameLoop.prototype.run = function() {
@@ -15,7 +16,8 @@ define('gameloop', function () {
         var prevTickRatio = -1;
         var self = this;
         function loop() {
-            window.requestAnimFrame(loop);
+            if (!window.stopRequestAnimFrame)
+                window.requestAnimFrame(loop);
 
             var delta = Date.now() - lastUpdate;
 

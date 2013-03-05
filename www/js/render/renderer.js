@@ -15,6 +15,7 @@ define('render/renderer', function () {
         this.staticObjects = [];
         this.lastTickRatio = 0;
         this.dirtyMap = [];
+        this.drawTicker = 3;
     }
 
     Renderer.prototype.init = function (atlas) {
@@ -39,6 +40,9 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
+        if (nxtTickRatio === 0)
+            console.log('draw ticker: ' + this.drawTicker++);
+
         var self = this;
         this.staticObjects.forEach(function (elem, i) {
             var yPoint = elem.tileY * self.tileWidth;
@@ -157,6 +161,23 @@ define('render/renderer', function () {
 
     Renderer.prototype.addAnimatedStatic = function (elem) {
 
+    };
+
+    Renderer.prototype.renderTestEndScreen = function () {
+        this.backgroundCtx.clearRect(0, 0, this.background.width, this.background.height);
+
+        this.screenCtx.fillStyle = '#6c6';
+        this.screenCtx.clearRect(0,0,this.screen.width,this.screen.height);
+        this.screenCtx.fillRect(0, 0, this.screen.width, this.screen.height);
+
+        this.screenCtx.fillStyle = '#000';
+        this.screenCtx.font = 'bold 16px Arial, sans-serif';
+
+        var txt = "GAME OVER :(";
+        var txtSize = this.screenCtx.measureText(txt);
+        var xCoord = this.screen.width / 2 - txtSize.width / 2;
+
+        this.screenCtx.fillText(txt, xCoord, this.screen.height / 2)
     };
 
     return Renderer;
