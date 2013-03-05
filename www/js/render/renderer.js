@@ -90,8 +90,13 @@ define('render/renderer', function () {
             var anim = elem.currentSprite;
             elem.currentFrame++;
 
-            if (elem.currentFrame >= anim.length)
+            if (elem.currentFrame >= anim.length) {
                 elem.currentFrame = 0;
+                if (elem.nxtSpriteSet) {
+                    elem.currentSpriteId = elem.nxtSpriteId;
+                    elem.currentSprite = elem.sprites[elem.nxtSpriteId];
+                }
+            }
 
             this.screenCtx.clearRect(elem.tileX * this.tileWidth, elem.tileY * this.tileWidth,
                 anim.tileWidth * this.tileWidth, anim.tileWidth * this.tileWidth);
@@ -134,6 +139,12 @@ define('render/renderer', function () {
         for (var y = elem.tileY; y < spriteEndY; y++)
             for (var x = elem.tileX; x < spriteEndX; x++)
                 this.dirtyMap[y][x] = elem;
+    };
+
+    Renderer.prototype.queueNxtSprite = function (id, spriteId) {
+        var o = this.dynamicObjects[id];
+        o.nxtSpriteId = spriteId;
+        o.nxtSpriteSet = true;
     };
 
     Renderer.prototype.addMovingDynamic = function (elem) {

@@ -24,7 +24,8 @@ define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/
             });
         });
         // jack treasure
-        self.renderer.addDynamic(new DynamicObject(self.id, atlasMapper['jack'], 3, 10, atlasMapper['jack']['run'], 'run'));
+        self.renderer.addDynamic(new DynamicObject(self.id, atlasMapper['jack'], 3, 10, atlasMapper['jack']['run'], 'run', false, null));
+        self.game.setHeroId(self.id);
         self.id++;
     };
 

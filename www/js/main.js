@@ -15,9 +15,25 @@ require(['app', 'input/inputhandler', 'render/renderer', 'game/game', 'levelrepo
         var screen = document.getElementById('screen');
         var background = document.getElementById('background');
 
-        var game = new Game();
+        var Y_TILES = 18;
+        var ANIMATION_SPEED = 100; //ms
+        var GAME_SPEED = 30; //ms
+
+        var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
+
+        var game = new Game(renderer);
+
+        var camera = new Camera(renderer, game);
+        var gameLoop = new GameLoop(renderer, camera, game, ANIMATION_SPEED, GAME_SPEED);
+        var loader = new ResourceLoader();
+
+        var gameActionMapper = {
+            up: game.jump.bind(game),
+            down: game.slide.bind(game)
+        };
+
         var touchInterpreter = new TouchInterpreter();
-        var inputHandler = new InputHandler(game, touchInterpreter);
+        var inputHandler = new InputHandler(game, touchInterpreter, gameActionMapper);
 
         if (Modernizr.touch) {
             screen.addEventListener('touchstart', inputHandler.handleTouchStart.bind(inputHandler), false);
@@ -26,14 +42,6 @@ require(['app', 'input/inputhandler', 'render/renderer', 'game/game', 'levelrepo
         } else {
             //todo game-pad + keyboard
         }
-        var Y_TILES = 18;
-        var ANIMATION_SPEED = 100; //ms
-        var GAME_SPEED = 30; //ms
-
-        var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
-        var camera = new Camera(renderer, game);
-        var gameLoop = new GameLoop(renderer, camera, game, ANIMATION_SPEED, GAME_SPEED);
-        var loader = new ResourceLoader();
 
         var app = new App(inputHandler, renderer, game, gameLoop, levelRepository, loader, camera);
         app.run();

@@ -1,7 +1,8 @@
 define('input/inputhandler', function () {
-    function InputHandler(game, touchInterpreter) {
+    function InputHandler(game, touchInterpreter, actionMapper) {
         this.game = game;
         this.touchInterpreter = touchInterpreter;
+        this.actionMapper = actionMapper;
         this.onGoingTouches = {};
     }
 
@@ -26,7 +27,7 @@ define('input/inputhandler', function () {
 
             if (goinTouches.length == 4) {
                 var action = this.touchInterpreter.interpret(goinTouches);
-                this.game.do(action);
+                this.actionMapper[action]();
 
                 for (var prop in this.onGoingTouches)
                     delete this.onGoingTouches[prop];
@@ -46,7 +47,7 @@ define('input/inputhandler', function () {
             if (goinTouches !== undefined) {
                 goinTouches.push(touches[i]);
                 var action = this.touchInterpreter.interpret(goinTouches);
-                this.game.do(action);
+                this.actionMapper[action]();
 
                 for (var prop in this.onGoingTouches)
                     delete this.onGoingTouches[prop];
