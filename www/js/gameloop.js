@@ -42,7 +42,7 @@ define('gameloop', function () {
 
             } else {
                 acDeltaGame += delta;
-                nxtTickRatio = Math.round(acDeltaGame/self.gameSpeed * 100) / 100;
+                nxtTickRatio = Math.round(acDeltaGame/self.gameSpeed * 10) / 10;
                 if (nxtTickRatio >= 1)
                     nxtTickRatio = 0;
                 if (prevTickRatio != nxtTickRatio)
