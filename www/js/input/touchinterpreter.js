@@ -3,12 +3,12 @@ define('input/touchinterpreter', ['input/gesture'], function (Gesture) {
     }
 
     TouchInterpreter.prototype.interpret = function (touches) {
-        var startPoint = touches[1];
+        var startPoint = touches[0];
         var vectors = [];
         for (var i = 1; i < touches.length; i++) {
             vectors.push({
-                x: touches[i].clientX - startPoint.clientX,
-                y: touches[i].clientY - startPoint.clientY
+                x: touches[i].x - startPoint.x,
+                y: touches[i].y - startPoint.y
             });
             startPoint = touches[i];
         }

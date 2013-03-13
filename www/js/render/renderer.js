@@ -15,7 +15,7 @@ define('render/renderer', function () {
         this.staticObjects = [];
         this.lastTickRatio = 0;
         this.dirtyMap = [];
-        this.drawTicker = 3;
+        this.ticker = 3;
     }
 
     Renderer.prototype.init = function (atlas) {
@@ -40,7 +40,7 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
-        console.log(nxtTickRatio);
+//        console.log(nxtTickRatio);
 
         var self = this;
         this.staticObjects.forEach(function (elem, i) {
@@ -53,6 +53,7 @@ define('render/renderer', function () {
                 var x, xLast;
                 if (nxtTickRatio === 0) {
                     elem.tileX--;
+                    self.ticker++;
                     x = elem.tileX * self.tileWidth;
                     xLast = x + self.tileWidth;
 
@@ -172,7 +173,7 @@ define('render/renderer', function () {
         this.screenCtx.fillStyle = '#000';
         this.screenCtx.font = 'bold 16px Arial, sans-serif';
 
-        var txt = "GAME OVER :(";
+        var txt = "GAME OVER :( u ran " + this.ticker + " meters";
         var txtSize = this.screenCtx.measureText(txt);
         var xCoord = this.screen.width / 2 - txtSize.width / 2;
 

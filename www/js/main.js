@@ -19,10 +19,10 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
         var background = document.getElementById('background');
 
         var Y_TILES = 18;
-        var ANIMATION_SPEED = 100; //ms
-        var GAME_SPEED = 100; //ms
-        var JUMP_RANGE = 10;
-        var SLIDE_RANGE = 10;
+        var ANIMATION_SPEED = 25; //ms
+        var GAME_SPEED = 50; //ms
+        var JUMP_RANGE = 5;
+        var SLIDE_RANGE = 5;
         var JACKS_ID = 0;
 
         var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
