@@ -1,6 +1,6 @@
 define('render/renderer', function () {
 
-    function Renderer(screen, background, staticOsFactory, clientWidth, clientHeight, yTiles) {
+    function Renderer(screen, background, staticOsFactory, clientWidth, clientHeight, yTiles, gameSpeed) {
         this.screen = screen;
         this.screenCtx = screen.getContext('2d');
         this.background = background;
@@ -10,11 +10,15 @@ define('render/renderer', function () {
         this.clientHeight = clientHeight;
         this.atlas = {};
         this.yTiles = yTiles;
+        this.gameSpeed = gameSpeed;
         this.xTiles = 0;
         this.tileWidth = 0;
         this.dynamicObjects = {};
         this.staticObjects = [];
         this.lastTickRatio = 0;
+        this.lastDraw = Date.now();
+        this.lastStep = 0;
+        this.stepPxSum = 0;
         this.dirtyMap = [];
         this.ticker = 3;
     }
@@ -37,10 +41,71 @@ define('render/renderer', function () {
                 this.dirtyMap[y].push(null);
         }
 
-        return {xTiles:this.xTiles, yTiles:this.yTiles};
+        return {xTiles: this.xTiles, yTiles: this.yTiles};
     };
 
-    Renderer.prototype.draw = function (nxtTickRatio) {
+    Renderer.prototype.draw = function () {
+        var now = Date.now();
+
+        var drawDelta = now - this.lastDraw;
+//        console.log(drawDelta);
+
+        var stepRatio = Math.floor(this.gameSpeed / drawDelta);
+
+
+        var self = this;
+        self.staticObjects.forEach(function (elem) {
+            var xPoint = (elem.tileX * self.tileWidth) - self.stepPxSum;
+            var xPointLast = xPoint + self.lastStep;
+            var yPoint = elem.tileY * self.tileWidth;
+            var width = self.getImgRenderWidth(elem);
+            var height = self.getImgRenderHeight(elem);
+
+            self.screenCtx.clearRect(xPointLast, yPoint, width + 1, height + 1);
+            self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
+                xPoint, yPoint, width, height);
+
+            var dynamic = self.dirtyMap[elem.tileY][elem.tileX];
+            if (dynamic != null) {
+                self.renderDynamic(dynamic);
+            } else {
+                dynamic = self.dirtyMap[elem.tileY][elem.tileX + 1];
+                if (dynamic != null) {
+                    self.renderDynamic(dynamic);
+                }
+            }
+        });
+        var pxPerStep = Math.floor(this.tileWidth / stepRatio);
+        this.stepPxSum += pxPerStep;
+        console.log(pxPerStep);
+//        console.log(this.stepPxSum);
+        this.lastStep = pxPerStep;
+        this.lastDraw = now;
+    };
+
+    Renderer.prototype.tick = function () {
+        var self = this;
+        for (var i = this.staticObjects.length - 1; i >= 0; i--) {
+            var elem = this.staticObjects[i];
+
+            if (elem.tileX > 0) {
+                elem.tileX--;
+                self.ticker++;
+                self.stepPxSum = 0;
+
+            } else {
+                var yPoint = elem.tileY * self.tileWidth;
+                var width = self.getImgRenderWidth(elem);
+                var height = self.getImgRenderHeight(elem);
+
+                self.screenCtx.clearRect(0, yPoint, width, height);
+                self.staticObjects.splice(i, 1);
+                self.staticOsFactory.releaseInstance(elem);
+            }
+        }
+    };
+
+    Renderer.prototype.drawOld = function (nxtTickRatio) {
 //        console.log(nxtTickRatio);
 
         var self = this;
@@ -145,6 +210,9 @@ define('render/renderer', function () {
         for (var y = elem.tileY; y < spriteEndY; y++)
             for (var x = elem.tileX; x < spriteEndX; x++)
                 this.dirtyMap[y][x] = elem;
+
+        //todo remove just for testing
+        this.lastDraw = Date.now();
     };
 
     Renderer.prototype.queueNxtSprite = function (id, spriteId) {
@@ -169,7 +237,7 @@ define('render/renderer', function () {
         this.backgroundCtx.clearRect(0, 0, this.background.width, this.background.height);
 
         this.screenCtx.fillStyle = '#6c6';
-        this.screenCtx.clearRect(0,0,this.screen.width,this.screen.height);
+        this.screenCtx.clearRect(0, 0, this.screen.width, this.screen.height);
         this.screenCtx.fillRect(0, 0, this.screen.width, this.screen.height);
 
         this.screenCtx.fillStyle = '#000';
