@@ -1,10 +1,11 @@
 define('render/renderer', function () {
 
-    function Renderer(screen, background, clientWidth, clientHeight, yTiles) {
+    function Renderer(screen, background, staticOsFactory, clientWidth, clientHeight, yTiles) {
         this.screen = screen;
         this.screenCtx = screen.getContext('2d');
         this.background = background;
         this.backgroundCtx = background.getContext('2d');
+        this.staticOsFactory = staticOsFactory;
         this.clientWidth = clientWidth;
         this.clientHeight = clientHeight;
         this.atlas = {};
@@ -43,7 +44,8 @@ define('render/renderer', function () {
 //        console.log(nxtTickRatio);
 
         var self = this;
-        this.staticObjects.forEach(function (elem, i) {
+        for (var i = this.staticObjects.length - 1; i >= 0; i--) {
+            var elem = this.staticObjects[i];
             var yPoint = elem.tileY * self.tileWidth;
             var width = self.getImgRenderWidth(elem);
             var height = self.getImgRenderHeight(elem);
@@ -79,9 +81,9 @@ define('render/renderer', function () {
             } else {
                 self.screenCtx.clearRect(0, yPoint, width, height);
                 self.staticObjects.splice(i, 1);
+                self.staticOsFactory.releaseInstance(elem);
             }
-
-        });
+        }
 
         this.lastTickRatio = nxtTickRatio;
     };

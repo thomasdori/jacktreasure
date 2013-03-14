@@ -1,6 +1,7 @@
-define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/sprite', 'render/atlasmapper'], function (StaticObject, DynamicObject, Sprite, atlasMapper) {
-    function Camera(renderer, jacksId) {
+define('render/camera', ['render/dynamicobject', 'render/sprite', 'render/atlasmapper'], function (DynamicObject, Sprite, atlasMapper) {
+    function Camera(renderer, staticOsFactory, jacksId) {
         this.renderer = renderer;
+        this.staticOsFactory = staticOsFactory;
         this.id = 10;
         this.atlas = {};
         this.nxtXCoord = -1;
@@ -19,7 +20,7 @@ define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/
             for (var x = 0; x < gridInfo.xTiles; x++) {
                 var elem = this.map[y][x];
                 if (elem != 0 && elem != 'path') {
-                    this.renderer.addStatic(new StaticObject(this.id, atlasMapper[elem], x, y));
+                    this.renderer.addStatic(this.staticOsFactory.getInstance(this.id, atlasMapper[elem], x, y));
                     this.id++;
                 }
             }
@@ -33,11 +34,11 @@ define('render/camera', ['render/staticobject', 'render/dynamicobject', 'render/
     };
 
     Camera.prototype.tick = function () {
-        var xCoord = this.nxtXCoord -1;
+        var xCoord = this.nxtXCoord - 1;
         for (var y = 0; y < this.map.length; y++) {
             var elem = this.map[y][xCoord];
             if (elem != 0 && elem != 'path') {
-                this.renderer.addStatic(new StaticObject(this.id, atlasMapper[elem], this.width - 1, y));
+                this.renderer.addStatic(this.staticOsFactory.getInstance(this.id, atlasMapper[elem], this.width - 1, y));
                 this.id++;
             }
         }

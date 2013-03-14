@@ -1,8 +1,8 @@
 require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader',
     'render/camera', 'input/touchinterpreter', 'input/keyhandler', 'game/collisiondetector', 'input/touchfactory',
-    'lib/modernizr', 'lib/domReady'],
+    'render/staticobjectfactory', 'lib/modernizr', 'lib/domReady'],
     function (App, TouchHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera, TouchInterpreter,
-              KeyHandler, CollisionDetector, TouchFactory) {
+              KeyHandler, CollisionDetector, TouchFactory, StaticObjectFactory) {
 
         window.requestAnimFrame = (function () {
             return  window.requestAnimationFrame ||
@@ -25,10 +25,11 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
         var SLIDE_RANGE = 5;
         var JACKS_ID = 0;
 
-        var renderer = new Renderer(screen, background, window.innerWidth, window.innerHeight, Y_TILES);
+        var staticOsFactory = new StaticObjectFactory();
+        var renderer = new Renderer(screen, background, staticOsFactory, window.innerWidth, window.innerHeight, Y_TILES);
         var collisionDetector = new CollisionDetector();
         var game = new Game(renderer, collisionDetector, JUMP_RANGE, SLIDE_RANGE, JACKS_ID);
-        var camera = new Camera(renderer, JACKS_ID);
+        var camera = new Camera(renderer, staticOsFactory, JACKS_ID);
         var tickBus = [camera.tick.bind(camera), game.tick.bind(game)];
         var gameLoop = new GameLoop(renderer, tickBus, ANIMATION_SPEED, GAME_SPEED);
         var loader = new ResourceLoader();
