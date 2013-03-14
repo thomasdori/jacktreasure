@@ -40,7 +40,7 @@ define('render/renderer', function () {
     };
 
     Renderer.prototype.draw = function (nxtTickRatio) {
-        console.log(nxtTickRatio);
+//        console.log(nxtTickRatio);
 
         var self = this;
         this.staticObjects.forEach(function (elem, i) {

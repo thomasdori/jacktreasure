@@ -1,8 +1,8 @@
 require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader',
-    'render/camera', 'input/touchinterpreter', 'input/keyhandler', 'game/collisiondetector',
+    'render/camera', 'input/touchinterpreter', 'input/keyhandler', 'game/collisiondetector', 'input/touchfactory',
     'lib/modernizr', 'lib/domReady'],
     function (App, TouchHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera, TouchInterpreter,
-              KeyHandler, CollisionDetector) {
+              KeyHandler, CollisionDetector, TouchFactory) {
 
         window.requestAnimFrame = (function () {
             return  window.requestAnimationFrame ||
@@ -39,7 +39,7 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
         };
         if (Modernizr.touch) {
             var touchInterpreter = new TouchInterpreter();
-            var touchHandler = new TouchHandler(touchInterpreter, gameActionMapper);
+            var touchHandler = new TouchHandler(touchInterpreter, gameActionMapper, new TouchFactory());
 
             screen.addEventListener('touchstart', touchHandler.handleTouchStart.bind(touchHandler), false);
             screen.addEventListener('touchmove', touchHandler.handleTouchMove.bind(touchHandler), false);
