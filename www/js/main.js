@@ -19,20 +19,20 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
         var background = document.getElementById('background');
 
         var Y_TILES = 18;
-        var ANIMATION_SPEED = 25; //ms
-        var GAME_SPEED = 150; //ms
-        var TRANSITION_SPEED = 20; //ms
+        var ANIMATION_SPEED = 33; //ms
+        var GAME_SPEED = 66; //ms
+        var FRAME_SPEED = 16; //ms - performs better and smoother than calculation of speed
         var JUMP_RANGE = 5;
         var SLIDE_RANGE = 5;
         var JACKS_ID = 0;
 
         var staticOsFactory = new StaticObjectFactory();
-        var renderer = new Renderer(screen, background, staticOsFactory, window.innerWidth, window.innerHeight, Y_TILES, GAME_SPEED);
+        var renderer = new Renderer(screen, background, staticOsFactory, window.innerWidth, window.innerHeight, Y_TILES);
         var collisionDetector = new CollisionDetector();
         var game = new Game(renderer, collisionDetector, JUMP_RANGE, SLIDE_RANGE, JACKS_ID);
         var camera = new Camera(renderer, staticOsFactory, JACKS_ID);
         var tickBus = [camera.tick.bind(camera), game.tick.bind(game), renderer.tick.bind(renderer)];
-        var gameLoop = new GameLoop(renderer, tickBus, ANIMATION_SPEED, GAME_SPEED, TRANSITION_SPEED);
+        var gameLoop = new GameLoop(renderer, tickBus, ANIMATION_SPEED, GAME_SPEED, FRAME_SPEED);
         var loader = new ResourceLoader();
 
         var gameActionMapper = {

@@ -1,68 +1,44 @@
 define('gameloop', function () {
-    function GameLoop(renderer, tickBus, animationSpeed, gameSpeed, transitionSpeed) {
+    function GameLoop(renderer, tickBus, animationSpeed, gameSpeed, frameSpeed) {
         this.renderer = renderer;
         this.tickBus = tickBus;
         this.animationSpeed = animationSpeed;
         this.gameSpeed = gameSpeed;
-        this.transitionSpeed = transitionSpeed;
+        this.frameSpeed = frameSpeed;
         window.stopRequestAnimFrame = false;
     }
 
     GameLoop.prototype.run = function() {
-        var lastUpdate = 0;
-        var acDeltaAnim = 0;
-        var acDeltaGame = 0;
-        var acDeltaTrans = 0;
-//        var transToGameRate = this.gameSpeed / this.transitionSpeed;
-//        var nxtTickRatio = 0;
-//        var prevTickRatio = -1;
+        var animRate = Math.round(this.animationSpeed / this.frameSpeed);
+        var gameRate = Math.round(this.gameSpeed / this.frameSpeed);
+        this.renderer.setTickRate(gameRate);
+
+        var animTicker = 0;
+        var gameTicker = 0;
         var self = this;
         function loop() {
             if (!window.stopRequestAnimFrame)
                 window.requestAnimFrame(loop);
 
-            var delta = Date.now() - lastUpdate;
-
-            // animation stuff
-            if (acDeltaAnim > self.animationSpeed) {
-                acDeltaAnim = 0;
-
+            if (animTicker >= animRate) {
+                animTicker = 0;
                 self.renderer.drawAnimation();
 
             } else {
-                acDeltaAnim += delta;
+                animTicker++;
             }
 
-            // moving, game stuff, everything registered to the tick bus
-            if (acDeltaGame > self.gameSpeed) {
-                acDeltaGame = 0;
-
+            if (gameTicker >= gameRate) {
+                gameTicker = 0;
                 self.tickBus.forEach(function (method) {
                     method();
                 });
 
-//                nxtTickRatio = 0;
-
             } else {
-                acDeltaGame += delta;
-//                nxtTickRatio = Math.round(acDeltaGame/self.gameSpeed * 10) / 10;
-//                if (nxtTickRatio >= 1)
-//                    nxtTickRatio = 0;
-//                if (prevTickRatio != nxtTickRatio)
-//                    self.renderer.draw(nxtTickRatio);
+                gameTicker++;
             }
 
-//            if (acDeltaTrans > self.transitionSpeed) {
-//
-//            } else {
-//                acDeltaTrans += delta;
-//            }
-
-//            prevTickRatio = nxtTickRatio;
-
             self.renderer.draw();
-
-            lastUpdate = Date.now();
         }
 
         loop();

@@ -1,6 +1,6 @@
 define('render/renderer', function () {
 
-    function Renderer(screen, background, staticOsFactory, clientWidth, clientHeight, yTiles, gameSpeed) {
+    function Renderer(screen, background, staticOsFactory, clientWidth, clientHeight, yTiles) {
         this.screen = screen;
         this.screenCtx = screen.getContext('2d');
         this.background = background;
@@ -10,17 +10,14 @@ define('render/renderer', function () {
         this.clientHeight = clientHeight;
         this.atlas = {};
         this.yTiles = yTiles;
-        this.gameSpeed = gameSpeed;
         this.xTiles = 0;
         this.tileWidth = 0;
         this.dynamicObjects = {};
         this.staticObjects = [];
-        this.lastTickRatio = 0;
-        this.lastDraw = Date.now();
-        this.lastStep = 0;
         this.stepPxSum = 0;
         this.dirtyMap = [];
         this.ticker = 3;
+        this.pxPerStep = 0;
     }
 
     Renderer.prototype.init = function (atlas) {
@@ -44,24 +41,20 @@ define('render/renderer', function () {
         return {xTiles: this.xTiles, yTiles: this.yTiles};
     };
 
+    Renderer.prototype.setTickRate = function (framesPerTick) {
+        this.pxPerStep = Math.floor(this.tileWidth / framesPerTick);
+    };
+
     Renderer.prototype.draw = function () {
-        var now = Date.now();
-
-        var drawDelta = now - this.lastDraw;
-//        console.log(drawDelta);
-
-        var stepRatio = Math.floor(this.gameSpeed / drawDelta);
-
-
         var self = this;
         self.staticObjects.forEach(function (elem) {
             var xPoint = (elem.tileX * self.tileWidth) - self.stepPxSum;
-            var xPointLast = xPoint + self.lastStep;
+            var xPointLast = xPoint + self.pxPerStep;
             var yPoint = elem.tileY * self.tileWidth;
             var width = self.getImgRenderWidth(elem);
             var height = self.getImgRenderHeight(elem);
 
-            self.screenCtx.clearRect(xPointLast, yPoint, width + 1, height + 1);
+            self.screenCtx.clearRect(xPointLast - 1, yPoint - 1, width + 2, height + 2);
             self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
                 xPoint, yPoint, width, height);
 
@@ -75,12 +68,8 @@ define('render/renderer', function () {
                 }
             }
         });
-        var pxPerStep = Math.floor(this.tileWidth / stepRatio);
-        this.stepPxSum += pxPerStep;
-        console.log(pxPerStep);
-//        console.log(this.stepPxSum);
-        this.lastStep = pxPerStep;
-        this.lastDraw = now;
+
+        this.stepPxSum += this.pxPerStep;
     };
 
     Renderer.prototype.tick = function () {
@@ -90,8 +79,6 @@ define('render/renderer', function () {
 
             if (elem.tileX > 0) {
                 elem.tileX--;
-                self.ticker++;
-                self.stepPxSum = 0;
 
             } else {
                 var yPoint = elem.tileY * self.tileWidth;
@@ -103,54 +90,8 @@ define('render/renderer', function () {
                 self.staticOsFactory.releaseInstance(elem);
             }
         }
-    };
-
-    Renderer.prototype.drawOld = function (nxtTickRatio) {
-//        console.log(nxtTickRatio);
-
-        var self = this;
-        for (var i = this.staticObjects.length - 1; i >= 0; i--) {
-            var elem = this.staticObjects[i];
-            var yPoint = elem.tileY * self.tileWidth;
-            var width = self.getImgRenderWidth(elem);
-            var height = self.getImgRenderHeight(elem);
-
-            if (elem.tileX > 0) {
-
-                var x, xLast;
-                if (nxtTickRatio === 0) {
-                    elem.tileX--;
-                    self.ticker++;
-                    x = elem.tileX * self.tileWidth;
-                    xLast = x + self.tileWidth;
-
-                } else {
-                    x = (elem.tileX * self.tileWidth) - Math.floor(self.tileWidth * nxtTickRatio);
-                    xLast = (x + self.tileWidth) - Math.floor(self.tileWidth * self.lastTickRatio);
-                }
-
-                self.screenCtx.clearRect(xLast, yPoint, width, height);
-                self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
-                    x, yPoint, width, height);
-
-                var dynamic = self.dirtyMap[elem.tileY][elem.tileX];
-                if (dynamic != null) {
-                    self.renderDynamic(dynamic);
-                } else {
-                    dynamic = self.dirtyMap[elem.tileY][elem.tileX + 1];
-                    if (dynamic != null) {
-                        self.renderDynamic(dynamic);
-                    }
-                }
-
-            } else {
-                self.screenCtx.clearRect(0, yPoint, width, height);
-                self.staticObjects.splice(i, 1);
-                self.staticOsFactory.releaseInstance(elem);
-            }
-        }
-
-        this.lastTickRatio = nxtTickRatio;
+        self.ticker++;
+        self.stepPxSum = 0;
     };
 
     Renderer.prototype.drawAnimation = function () {
@@ -211,8 +152,6 @@ define('render/renderer', function () {
             for (var x = elem.tileX; x < spriteEndX; x++)
                 this.dirtyMap[y][x] = elem;
 
-        //todo remove just for testing
-        this.lastDraw = Date.now();
     };
 
     Renderer.prototype.queueNxtSprite = function (id, spriteId) {
