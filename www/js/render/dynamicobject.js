@@ -8,7 +8,8 @@ define('render/dynamicobject', function () {
         this.currentSpriteId = currentSpriteId;
         this.nxtSpriteSet = nxtSpriteSet;
         this.nxtSpriteId = nxtSpriteId;
-        this.currentFrame = 0;
+        this.currentFrameId = 0;
+        this.currentFrame = currentSprite[0];
     }
 
     return DynamicObject;

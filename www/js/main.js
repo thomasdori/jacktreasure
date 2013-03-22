@@ -1,8 +1,8 @@
 require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepository', 'gameloop', 'resourceloader',
     'render/camera', 'input/touchinterpreter', 'input/keyhandler', 'game/collisiondetector', 'input/touchfactory',
-    'render/staticobjectfactory', 'lib/modernizr', 'lib/domReady'],
+    'render/staticobjectfactory', 'render/atlasmapper', 'lib/modernizr', 'lib/domReady'],
     function (App, TouchHandler, Renderer, Game, levelRepository, GameLoop, ResourceLoader, Camera, TouchInterpreter,
-              KeyHandler, CollisionDetector, TouchFactory, StaticObjectFactory) {
+              KeyHandler, CollisionDetector, TouchFactory, StaticObjectFactory, AtlasMapper) {
 
         window.requestAnimFrame = (function () {
             return  window.requestAnimationFrame ||
@@ -25,12 +25,14 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
         var JUMP_RANGE = 5;
         var SLIDE_RANGE = 5;
         var JACKS_ID = 0;
+        var REF_ATLAS_TILE_WIDTH = 32; //px
 
         var staticOsFactory = new StaticObjectFactory();
         var renderer = new Renderer(screen, background, staticOsFactory, window.innerWidth, window.innerHeight, Y_TILES);
         var collisionDetector = new CollisionDetector();
         var game = new Game(renderer, collisionDetector, JUMP_RANGE, SLIDE_RANGE, JACKS_ID);
-        var camera = new Camera(renderer, staticOsFactory, JACKS_ID);
+        var atlasMapper = new AtlasMapper(REF_ATLAS_TILE_WIDTH);
+        var camera = new Camera(renderer, staticOsFactory, atlasMapper, JACKS_ID);
         var tickBus = [camera.tick.bind(camera), game.tick.bind(game), renderer.tick.bind(renderer)];
         var gameLoop = new GameLoop(renderer, tickBus, ANIMATION_SPEED, GAME_SPEED, FRAME_SPEED);
         var loader = new ResourceLoader();
@@ -55,6 +57,6 @@ require(['app', 'input/touchhandler', 'render/renderer', 'game/game', 'levelrepo
             window.addEventListener('keydown', keyHandler.handleKeyDown.bind(keyHandler), false);
         }
 
-        var app = new App(renderer, game, gameLoop, levelRepository, loader, camera, collisionDetector);
+        var app = new App(renderer, game, gameLoop, levelRepository, loader, camera, collisionDetector, atlasMapper);
         app.run();
     });

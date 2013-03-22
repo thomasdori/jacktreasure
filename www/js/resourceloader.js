@@ -1,4 +1,4 @@
-define('resourceloader', function () {
+define('resourceloader', ['resourcetype'], function (ResourceType) {
     function ResourceLoader() {
         this.resources = [];
         this.resourcesLoaded = 0;
@@ -7,11 +7,23 @@ define('resourceloader', function () {
     ResourceLoader.prototype.addImage = function (imgSrc) {
         var img = new Image();
         this.resources.push({
-            file:img,
-            src:imgSrc
+            type: ResourceType.IMAGE,
+            file: img,
+            src: imgSrc
         });
 
         return img;
+    };
+
+    ResourceLoader.prototype.addJSON = function (jsonSrc) {
+        var jsonObject = {};
+        this.resources.push({
+            type: ResourceType.JSON,
+            file: jsonObject,
+            src: jsonSrc
+        });
+
+        return jsonObject;
     };
 
     ResourceLoader.prototype.addSound = function (soundSrc) {
@@ -21,10 +33,26 @@ define('resourceloader', function () {
     ResourceLoader.prototype.load = function () {
         var self = this;
         self.resources.forEach(function (elem) {
-            elem.file.onload = function () {
-                self.onResourceLoad();
-            };
-            elem.file.src = elem.src;
+
+            if (elem.type === ResourceType.IMAGE) {
+                elem.file.onload = function () {
+                    self.onResourceLoad();
+                };
+                elem.file.src = elem.src;
+
+            } else if (elem.type === ResourceType.JSON) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", elem.src, true);
+
+                xhr.onload = function () {
+                    var json = JSON.parse(this.responseText);
+                    for(var k in json)
+                        elem.file[k] = json[k];
+                    self.onResourceLoad();
+                };
+
+                xhr.send();
+            }
         });
     };
 

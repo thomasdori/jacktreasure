@@ -1,16 +1,41 @@
-define('render/atlasmapper', ['render/subimage', 'render/sprite'], function (SubImage, Sprite) {
-    return {
-        rock: new SubImage(160, 0, 32, 32, 1, 1),
-        path: new SubImage(128, 0, 32, 32, 1, 1),
-        spears: new SubImage(192, 0, 64, 32, 2, 1),
-        fire: new Sprite(128, 32, 32, 32, 4, 1, 1),
-        jack: {
-            run: new Sprite(0, 0, 32, 64, 4, 1, 2),
-            jump_broad: new Sprite(0, 64, 64, 64, 4, 2, 2),
-            jump: new Sprite(0, 128, 32, 64, 4, 1, 2),
-            slide: new Sprite(0, 192, 32, 64, 4, 1, 2)
-        },
-        canyon: new SubImage(128, 128, 96, 96, 3, 3),
-        large_obstacle: new SubImage(224, 128, 32, 64, 1, 2)
+define('render/atlasmapper', ['render/subimage'], function (SubImage) {
+    function AtlasMapper(referenceWidth) {
+        this.referenceWidth = referenceWidth;
+        this.atlasDict = {};
     }
+
+    AtlasMapper.prototype.init = function (atlasInfo) {
+        var self = this;
+        atlasInfo.frames.forEach(function (elem) {
+            var offSetFromCenterX = elem.spriteSourceSize.x - Math.floor(elem.sourceSize.w * 0.5);
+            var offSetFromCenterY = elem.spriteSourceSize.y - Math.floor(elem.sourceSize.h * 0.5);
+
+            var subImage = new SubImage(elem.frame.x, elem.frame.y, elem.frame.w, elem.frame.h,
+                offSetFromCenterX, offSetFromCenterY,
+                Math.floor(elem.sourceSize.w / self.referenceWidth),
+                Math.floor(elem.sourceSize.h / self.referenceWidth));
+
+            if (elem.filename.search("-\\d+") != -1) {
+
+                // it's a sprite
+                var keyName = elem.filename.substring(0, elem.filename.lastIndexOf('-'));
+                if (self.atlasDict[keyName] == undefined) {
+                    self.atlasDict[keyName] = [subImage];
+                } else {
+                    //
+                    self.atlasDict[keyName].push(subImage);
+                }
+
+            } else {
+                // it's just a sub image
+                self.atlasDict[elem.filename.substring(0, elem.filename.lastIndexOf('.'))] = subImage;
+            }
+        });
+    };
+
+    AtlasMapper.prototype.get = function (key) {
+        return this.atlasDict[key];
+    };
+
+    return AtlasMapper;
 });

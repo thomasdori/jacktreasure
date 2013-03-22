@@ -12,6 +12,7 @@ define('render/renderer', function () {
         this.yTiles = yTiles;
         this.xTiles = 0;
         this.tileWidth = 0;
+        this.tileOffSet = 0;
         this.dynamicObjects = {};
         this.staticObjects = [];
         this.stepPxSum = 0;
@@ -24,6 +25,7 @@ define('render/renderer', function () {
         this.atlas = atlas;
 
         this.tileWidth = Math.floor(this.clientHeight / 18);
+        this.tileOffSet = - Math.floor(this.tileWidth * 0.5);
         this.xTiles = Math.floor(this.clientWidth / this.tileWidth);
 
         this.screen.width = this.clientWidth;
@@ -48,14 +50,15 @@ define('render/renderer', function () {
     Renderer.prototype.draw = function () {
         var self = this;
         self.staticObjects.forEach(function (elem) {
-            var xPoint = (elem.tileX * self.tileWidth) - self.stepPxSum;
+            var xPoint = self._getImgRenderXPoint(elem.tileX, elem.subImage) - self.stepPxSum;
             var xPointLast = xPoint + self.pxPerStep;
-            var yPoint = elem.tileY * self.tileWidth;
-            var width = self.getImgRenderWidth(elem);
-            var height = self.getImgRenderHeight(elem);
+            var yPoint = self._getImgRenderYPoint(elem.tileY, elem.subImage);
+            var width = self._getImgRenderWidth(elem.subImage);
+            var height = self._getImgRenderHeight(elem.subImage);
 
             self.screenCtx.clearRect(xPointLast - 1, yPoint - 1, width + 2, height + 2);
-            self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint, elem.subImage.width, elem.subImage.height,
+            self.screenCtx.drawImage(self.atlas, elem.subImage.xPoint, elem.subImage.yPoint,
+                elem.subImage.width, elem.subImage.height,
                 xPoint, yPoint, width, height);
 
             var dynamic = self.dirtyMap[elem.tileY][elem.tileX];
@@ -82,8 +85,8 @@ define('render/renderer', function () {
 
             } else {
                 var yPoint = elem.tileY * self.tileWidth;
-                var width = self.getImgRenderWidth(elem);
-                var height = self.getImgRenderHeight(elem);
+                var width = self._getImgRenderWidth(elem.subImage);
+                var height = self._getImgRenderHeight(elem.subImage);
 
                 self.screenCtx.clearRect(0, yPoint, width, height);
                 self.staticObjects.splice(i, 1);
@@ -100,10 +103,12 @@ define('render/renderer', function () {
 
             var elem = this.dynamicObjects[key];
             var anim = elem.currentSprite;
-            elem.currentFrame++;
+            elem.currentFrameId++;
+            elem.currentFrame = elem.currentSprite[elem.currentFrameId];
 
-            if (elem.currentFrame >= anim.length) {
-                elem.currentFrame = 0;
+            if (elem.currentFrameId >= anim.length) {
+                elem.currentFrameId = 0;
+                elem.currentFrame = elem.currentSprite[elem.currentFrameId];
                 if (elem.nxtSpriteSet) {
                     elem.currentSpriteId = elem.nxtSpriteId;
                     elem.currentSprite = elem.sprites[elem.nxtSpriteId];
@@ -119,35 +124,45 @@ define('render/renderer', function () {
 
     Renderer.prototype.renderDynamic = function (elem) {
         this.screenCtx.drawImage(this.atlas,
-            elem.currentSprite.xPoint + (elem.currentSprite.width * elem.currentFrame),
-            elem.currentSprite.yPoint,
-            elem.currentSprite.width,
-            elem.currentSprite.height,
-            elem.tileX * this.tileWidth,
-            elem.tileY * this.tileWidth,
-            elem.currentSprite.tileWidth * this.tileWidth,
-            elem.currentSprite.tileHeight * this.tileWidth);
+            elem.currentFrame.xPoint,
+            elem.currentFrame.yPoint,
+            elem.currentFrame.width,
+            elem.currentFrame.height,
+            this._getImgRenderXPoint(elem.tileX ,elem.currentFrame),
+            this._getImgRenderYPoint(elem.tileY, elem.currentFrame),
+            this._getImgRenderWidth(elem.currentFrame),
+            this._getImgRenderHeight(elem.currentFrame));
     };
 
     Renderer.prototype.setBackground = function (info) {
         for (var x = 0; x < this.xTiles; x++)
-            this.backgroundCtx.drawImage(this.atlas, info.subImage.xPoint, info.subImage.yPoint, info.subImage.width, info.subImage.height,
-                x * this.tileWidth, info.startY * this.tileWidth, this.getImgRenderWidth(info), this.getImgRenderHeight(info));
+            this.backgroundCtx.drawImage(this.atlas, info.subImage.xPoint, info.subImage.yPoint,
+                info.subImage.width, info.subImage.height,
+                x * this.tileWidth, info.startY * this.tileWidth,
+                this._getImgRenderWidth(info.subImage), this._getImgRenderHeight(info.subImage));
     };
 
-    Renderer.prototype.getImgRenderWidth = function (elem) {
-        return elem.subImage.tileWidth * this.tileWidth;
+    Renderer.prototype._getImgRenderXPoint = function (x, subImage) {
+        return x * this.tileWidth + this.tileOffSet - subImage.offSetX;
     };
 
-    Renderer.prototype.getImgRenderHeight = function (elem) {
-        return elem.subImage.tileHeight * this.tileWidth;
+    Renderer.prototype._getImgRenderYPoint = function (y, subImage) {
+        return y * this.tileWidth + this.tileOffSet - subImage.offSetY;
+    };
+
+    Renderer.prototype._getImgRenderWidth = function (subImage) {
+        return subImage.tileWidth * this.tileWidth;
+    };
+
+    Renderer.prototype._getImgRenderHeight = function (subImage) {
+        return subImage.tileHeight * this.tileWidth;
     };
 
     Renderer.prototype.addDynamic = function (elem) {
         this.dynamicObjects[elem.id] = elem;
 
-        var spriteEndY = elem.tileY + elem.currentSprite.tileHeight;
-        var spriteEndX = elem.tileX + elem.currentSprite.tileWidth;
+        var spriteEndY = elem.tileY + elem.currentFrame.tileHeight;
+        var spriteEndX = elem.tileX + elem.currentFrame.tileWidth;
         for (var y = elem.tileY; y < spriteEndY; y++)
             for (var x = elem.tileX; x < spriteEndX; x++)
                 this.dirtyMap[y][x] = elem;

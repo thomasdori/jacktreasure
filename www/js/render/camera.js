@@ -1,7 +1,8 @@
-define('render/camera', ['render/dynamicobject', 'render/sprite', 'render/atlasmapper'], function (DynamicObject, Sprite, atlasMapper) {
-    function Camera(renderer, staticOsFactory, jacksId) {
+define('render/camera', ['render/dynamicobject'], function (DynamicObject) {
+    function Camera(renderer, staticOsFactory, atlasMapper, jacksId) {
         this.renderer = renderer;
         this.staticOsFactory = staticOsFactory;
+        this.atlasMapper = atlasMapper;
         this.id = 10;
         this.atlas = {};
         this.nxtXCoord = -1;
@@ -13,14 +14,15 @@ define('render/camera', ['render/dynamicobject', 'render/sprite', 'render/atlasm
 
     Camera.prototype.init = function (map, gridInfo) {
 
-        this.renderer.setBackground({startX: 0, startY: 12, subImage: atlasMapper['path']});
+        this.renderer.setBackground({startX: 0, startY: 12, subImage: this.atlasMapper.get('path')});
         this.map = map;
 
         for (var y = 0; y < this.map.length; y++) {
             for (var x = 0; x < gridInfo.xTiles; x++) {
                 var elem = this.map[y][x];
                 if (elem != 0 && elem != 'path') {
-                    this.renderer.addStatic(this.staticOsFactory.getInstance(this.id, atlasMapper[elem], x, y));
+                    this.renderer.addStatic(
+                        this.staticOsFactory.getInstance(this.id, this.atlasMapper.get(elem), x, y));
                     this.id++;
                 }
             }
@@ -30,7 +32,16 @@ define('render/camera', ['render/dynamicobject', 'render/sprite', 'render/atlasm
         this.width = gridInfo.xTiles;
 
         // jack treasure
-        this.renderer.addDynamic(new DynamicObject(this.jacksId, atlasMapper['jack'], 3, 10, atlasMapper['jack']['run'], 'run', false, null));
+        var sprites = {
+            jump_broad: this.atlasMapper.get('jump_broad'),
+            jump: this.atlasMapper.get('jump'),
+            run: this.atlasMapper.get('run'),
+            run_fast: this.atlasMapper.get('run_fast'),
+            run_slow: this.atlasMapper.get('run_slow'),
+            slide: this.atlasMapper.get('slide')
+        };
+        this.renderer.addDynamic(new DynamicObject(this.jacksId, sprites, 3, 10, this.atlasMapper.get('run'), 'run',
+            false, null));
     };
 
     Camera.prototype.tick = function () {
@@ -38,7 +49,8 @@ define('render/camera', ['render/dynamicobject', 'render/sprite', 'render/atlasm
         for (var y = 0; y < this.map.length; y++) {
             var elem = this.map[y][xCoord];
             if (elem != 0 && elem != 'path') {
-                this.renderer.addStatic(this.staticOsFactory.getInstance(this.id, atlasMapper[elem], this.width - 1, y));
+                this.renderer.addStatic(this.staticOsFactory.getInstance(this.id, this.atlasMapper.get(elem),
+                    this.width - 1, y));
                 this.id++;
             }
         }
